@@ -43,8 +43,10 @@ def user_post():
     request_data = request.get_json()
     if request_data is None:
         return make_response(jsonify({'error': 'Not a JSON'}), 400)
-    if "name" not in request_data.keys():
-        return make_response(jsonify({'error': 'Missing name'}), 400)
+    if "email" not in request_data.keys():
+        return make_response(jsonify({'error': 'Missing email'}), 400)
+    if "password" not in request_data.keys():
+        return make_response(jsonify({'error': 'Missing password'}), 400)
     user_obj = User(**request_data)
     storage.new(user_obj)
     storage.save()
