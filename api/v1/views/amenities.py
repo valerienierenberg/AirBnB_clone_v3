@@ -45,11 +45,11 @@ def amenity_post():
         return make_response(jsonify({'error': 'Not a JSON'}), 400)
     if "name" not in request_data.keys():
         return make_response(jsonify({'error': 'Missing name'}), 400)
-    amenityobj = Amenity(**request_data)
-    storage.new(amenityobj)
+    amenity_obj = Amenity(**request_data)
+    storage.new(amenity_obj)
     storage.save()
-    amenitydict = amenityobj.to_dict()
-    return jsonify(amenitydict), 201
+    amenity_dict = amenity_obj.to_dict()
+    return jsonify(amenity_dict), 201
 
 
 @app_views.route('/amenities/<amenity_id>', methods=["PUT"])
@@ -66,5 +66,5 @@ def amenity_put(amenity_id):
         if key not in blacklist:
             setattr(res, key, value)
     res.save()
-    resdict = res.to_dict()
-    return jsonify(resdict), 200
+    res_dict = res.to_dict()
+    return jsonify(res_dict), 200

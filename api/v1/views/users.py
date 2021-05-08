@@ -45,11 +45,11 @@ def user_post():
         return make_response(jsonify({'error': 'Not a JSON'}), 400)
     if "name" not in request_data.keys():
         return make_response(jsonify({'error': 'Missing name'}), 400)
-    userobj = User(**request_data)
-    storage.new(userobj)
+    user_obj = User(**request_data)
+    storage.new(user_obj)
     storage.save()
-    userdict = userobj.to_dict()
-    return jsonify(userdict), 201
+    user_dict = user_obj.to_dict()
+    return jsonify(user_dict), 201
 
 
 @app_views.route('/users/<user_id>', methods=["PUT"])
@@ -66,5 +66,5 @@ def user_put(user_id):
         if key not in blacklist:
             setattr(res, key, value)
     res.save()
-    resdict = res.to_dict()
-    return jsonify(resdict), 200
+    res_dict = res.to_dict()
+    return jsonify(res_dict), 200

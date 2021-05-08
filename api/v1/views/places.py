@@ -9,7 +9,7 @@ from models.user import User
 from flask import jsonify, abort, request, make_response
 
 
-@app_views.route('/citys/<city_id>/places', methods=["GET"])
+@app_views.route('/cities/<city_id>/places', methods=["GET"])
 def places(city_id):
     """retrieves list of all place objects of a city"""
     home_city = storage.get(City, city_id)
@@ -17,8 +17,8 @@ def places(city_id):
         abort(404)
     places_dict = storage.all(Place)
     places_list = []
-    for obj in places_dict.values:
-        if obj.city_id == city.id:
+    for obj in places_dict.values():
+        if obj.city_id == city_id:
             places_list.append(obj.to_dict())
     return(jsonify(places_list))
 
@@ -43,7 +43,7 @@ def place_delete(place_id):
     return jsonify({}), 200
 
 
-@app_views.route('/citys/<city_id>/places', methods=["POST"])
+@app_views.route('/cities/<city_id>/places', methods=["POST"])
 def place_post(city_id):
     """creates a place object"""
     home_city = storage.get(City, city_id)
