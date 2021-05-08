@@ -53,11 +53,11 @@ def city_post(state_id):
     if "name" not in request_data.keys():
         return make_response(jsonify({'error': 'Missing name'}), 400)
     request_data["state_id"] = state_id
-    cityobj = City(**request_data)
-    storage.new(cityobj)
+    city_obj = City(**request_data)
+    storage.new(city_obj)
     storage.save()
-    citydict = cityobj.to_dict()
-    return jsonify(citydict), 201
+    city_dict = city_obj.to_dict()
+    return jsonify(city_dict), 201
 
 
 @app_views.route('/cities/<city_id>', methods=["PUT"])
@@ -74,5 +74,5 @@ def city_put(city_id):
         if key not in blacklist:
             setattr(res, key, value)
     res.save()
-    resdict = res.to_dict()
-    return jsonify(resdict), 200
+    res_dict = res.to_dict()
+    return jsonify(res_dict), 200

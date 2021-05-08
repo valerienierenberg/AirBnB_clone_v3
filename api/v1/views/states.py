@@ -45,11 +45,11 @@ def state_post():
         return make_response(jsonify({'error': 'Not a JSON'}), 400)
     if "name" not in request_data.keys():
         return make_response(jsonify({'error': 'Missing name'}), 400)
-    stateobj = State(**request_data)
-    storage.new(stateobj)
+    state_obj = State(**request_data)
+    storage.new(state_obj)
     storage.save()
-    statedict = stateobj.to_dict()
-    return jsonify(statedict), 201
+    state_dict = state_obj.to_dict()
+    return jsonify(state_dict), 201
 
 
 @app_views.route('/states/<state_id>', methods=["PUT"])
@@ -66,5 +66,5 @@ def state_put(state_id):
         if key not in blacklist:
             setattr(res, key, value)
     res.save()
-    resdict = res.to_dict()
-    return jsonify(resdict), 200
+    res_dict = res.to_dict()
+    return jsonify(res_dict), 200
