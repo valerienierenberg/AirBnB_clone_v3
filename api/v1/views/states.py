@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-""" TBD """
+""" API routes for states including every HTTP method """
 
 from api.v1.views import app_views
 from models import storage
@@ -47,6 +47,7 @@ def state_post():
         return make_response(jsonify({'error': 'Missing name'}), 400)
     stateobj = State(**request_data)
     storage.new(stateobj)
+    storage.save()
     statedict = stateobj.to_dict()
     return jsonify(statedict), 201
 
