@@ -4,11 +4,9 @@ handles all default Restful API actions """
 
 from api.v1.views import app_views
 from models import storage
-from models.review import Review
 from models.place import Place
-from models.user import User
+from models.amenity import Amenity
 from flask import jsonify, abort, request, make_response
-from models.engine.db_storage import Session
 import os
 
 
@@ -48,12 +46,11 @@ def places_amenity_post(place_id, amenity_id):
     home_place = storage.get(Place, place_id)
     amenities_obj_list = home_place.amenities
     res_amenity = storage.get(Amenity, amenity_id)
-    if (res_amenity is None or home_place is None or res_amenity not in
-            amenities_obj_list):
+    if (res_amenity is None or home_place is None):
         abort(404)
     for amenity_obj in home_place.amenities:
         if amenity_obj.id == amenity_id:
-            return jsonify({}), 200
-    home_place.amenities.append(amenity_obj)
+            return jsonify(res_amenity.to_dict()), 200
+    home_place.amenities.append(res_amenity)
     storage.save()
-    return jsonify(amenity_obj), 201
+    return jsonify(res_amenity.to_dict()), 201
