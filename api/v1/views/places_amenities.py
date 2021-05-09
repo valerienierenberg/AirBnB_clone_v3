@@ -29,10 +29,11 @@ def places_amenity_del(place_id, amenity_id):
     """deletes an Amenity object to a Place"""
     home_place = storage.get(Place, place_id)
     res_amenity = storage.get(Amenity, amenity_id)
-    if (res_amenity is None or home_place is None or res_amenity not in
-            amenities_obj_list):
+    if (res_amenity is None or home_place is None):
         abort(404)
     amenities_obj_list = home_place.amenities
+    if res_amenity not in amenities_obj_list:
+        abort(404)
     for amenity_obj in home_place.amenities:
         if amenity_obj.id == amenity_id:
             home_place.amenities.remove(amenity_obj)
