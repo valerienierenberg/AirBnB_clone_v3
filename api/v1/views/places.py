@@ -83,3 +83,50 @@ def place_put(place_id):
     res.save()
     res_dict = res.to_dict()
     return jsonify(res_dict), 200
+
+
+@app_views.route('/places_search', methods=["POST"])
+def place_post_search():
+    """retrieves all Place objects depending on JSON in body of the request"""
+    request_data = request.get_json()
+    places_dict = storage.all(Place)
+    places_list = []
+    for value in places_dict.values():
+        places_list.append(value.to_dict())
+    cities_dict = storage.all(City)
+    cities_list = []
+    for value in city_dict.values():
+        cities_list.append(value.to_dict())
+    if request_data is None:
+        return make_response(jsonify({'error': 'Not a JSON'}), 400)
+    # if no search criteria given, return all places:
+    if request_data == {} or ((!request_data["states"] or
+                               request_data["states"] == []) and
+                              (!request_data["cities"] or
+                               request_data["cities"] == []) and
+                              (!request_data["amenities"] or
+                               request_data["amenities"] == [])):
+        return(jsonify(places_list))
+    places_res_list = []
+    if type(request_data["states"]) is list:
+        for id in request_data["states"]:
+            for city in cities_list:
+                if city.state_id == id:
+                    for place in places_list:
+                        places_res_list.append(place)
+        # list now has every place in every city in the states passed in
+    if type(request_data["cities"]) is list:
+        for city in cities_list:
+            if city.state_id not in request_data["states"]:
+                for place in places_list:
+                    places_res_list.append(place)
+        # added places from cities passed if they aren't in the states passed
+    # if the place doesn't have *all* amenities passed in, remove from results
+    if type(request_data["amenities"]) is list and
+    len(request_data["amenities"]) != 0:
+        search = set(request["amenities"])  # make list into a set
+        for place in places_res_list:
+            present = set(place.amenities)
+            if !search.issubset(present):  # if not a subset,
+                places_res_list.remove(place)  # remove place from our list
+    return(jsonify(places_res_list))
