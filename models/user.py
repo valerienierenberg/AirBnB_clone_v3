@@ -33,4 +33,4 @@ class User(BaseModel, Base):
         """ makes sure password is hashed when set """
         if name is "password":
             value = hashlib.md5(value.encode()).hexdigest()
-        self.__dict__[name] = value
+        super().__setattr__(name, value)
