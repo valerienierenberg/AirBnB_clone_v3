@@ -108,14 +108,16 @@ def place_post_search():
                                request_data["amenities"] == [])):
         return(jsonify(places_list))
     places_res_list = []
-    if type(request_data["states"]) is list:
+    if ("states" in request_data.keys() and
+            type(request_data["states"]) is list):
         for id in request_data["states"]:
             for city in cities_list:
                 if city["state_id"] == id:
                     for place in places_list:
                         places_res_list.append(place)
         # list now has every place in every city in the states passed in
-    if type(request_data["cities"]) is list:
+    if ("cities" in request_data.keys() and
+            type(request_data["cities"]) is list):
         for city in cities_list:
             if city["state_id"] not in request_data["states"]:
                 for place in places_list:
@@ -125,9 +127,11 @@ def place_post_search():
     if ("amenities" in request_data.keys() and
             type(request_data["amenities"]) is list and
             len(request_data["amenities"]) != 0):
-        search = set(request["amenities"])
+        search = set(request_data["amenities"])
         for place in places_res_list:
-            present = set(place.amenities)
+            obj = storage.get(Place, place["id"])
+            amenities_list = obj.amenities
+            present = set(amenities_list)
             if not search.issubset(present):  # if not a subset,
                 places_res_list.remove(place)  # remove place from our list
     return(jsonify(places_res_list))
