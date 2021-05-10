@@ -64,7 +64,7 @@ def user_put(user_id):
     if request_data is None:
         return make_response(jsonify({'error': 'Not a JSON'}), 400)
     for key, value in request_data.items():
-        blacklist = ["id", "created_at", "updated_at"]
+        blacklist = ["id", "email", "created_at", "updated_at"]
         if key not in blacklist:
             setattr(res, key, value)
     res.save()
