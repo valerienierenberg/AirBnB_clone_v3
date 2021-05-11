@@ -125,6 +125,9 @@ def place_post_search():
     for place in places_list:
         if place["city_id"] in cities_searched:
             places_res_list.append(place)
+    # if no cities or states were passed return all places with amentites
+    if "states" not in request_data.keys() and "cities" not in request_data.keys():
+        places_res_list = places_list
     # if the place doesn't have *all* amenities passed in, remove from results
     if ("amenities" in request_data.keys() and
             type(request_data["amenities"]) is list and
