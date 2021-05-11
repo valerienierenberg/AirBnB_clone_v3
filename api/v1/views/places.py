@@ -100,38 +100,43 @@ def place_post_search():
     if request_data is None:
         return make_response(jsonify({'error': 'Not a JSON'}), 400)
     # if no search criteria given, return all places:
-    if request_data == {} or ((request_data["states"] is None or
+    if request_data == {} or (("states" not in request_data.keys() or
                                request_data["states"] == []) and
-                              (request_data["cities"] is None or
+                              ("cities" not in request_data.keys() or
                                request_data["cities"] == []) and
-                              (request_data["amenities"] is None or
+                              ("amenities" not in request_data.keys() or
                                request_data["amenities"] == [])):
         return(jsonify(places_list))
     places_res_list = []
+    cities_searched = []
+    # adding every city in passed states to a list
     if ("states" in request_data.keys() and
             type(request_data["states"]) is list):
-        for id in request_data["states"]:
-            for city in cities_list:
-                if city["state_id"] == id:
-                    for place in places_list:
-                        places_res_list.append(place)
-        # list now has every place in every city in the states passed in
+        for city in cities_list:
+            if city["state_id"] in request_data["states"]:
+                cities_searched.append(city["id"])
+    # adding every city passed in not allready from states passed in to list
     if ("cities" in request_data.keys() and
             type(request_data["cities"]) is list):
-        for city in cities_list:
-            if city["state_id"] not in request_data["states"]:
-                for place in places_list:
-                    places_res_list.append(place)
-        # added places from cities passed if they aren't in the states passed
+        for city in request_data["cities"]:
+            if city not in cities_searched:
+                cities_searched.append(city)
+    # adding every place from all cities in list
+    for place in places_list:
+        if place["city_id"] in cities_searched:
+            places_res_list.append(place)
     # if the place doesn't have *all* amenities passed in, remove from results
     if ("amenities" in request_data.keys() and
             type(request_data["amenities"]) is list and
             len(request_data["amenities"]) != 0):
-        search = set(request_data["amenities"])
-        for place in places_res_list:
+        copy_list = places_res_list.copy()
+        for place in copy_list:
             obj = storage.get(Place, place["id"])
-            amenities_list = obj.amenities
-            present = set(amenities_list)
-            if not search.issubset(present):  # if not a subset,
-                places_res_list.remove(place)  # remove place from our list
+            amenities_obj = obj.amenities
+            amenities_list = []
+            for each in amenities_obj:
+                amenities_list.append(each.id)
+            if not all(elem in amenities_list for
+                       elem in request_data["amenities"]):
+                places_res_list.remove(place)
     return(jsonify(places_res_list))
